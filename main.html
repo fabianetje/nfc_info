@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <h1>Scan een NFC-tag</h1>
+    <button id="scanButton">Scan NFC Tag</button>
+    <div id="result">Wacht op tag...</div>
+
+    <script>
+      if ('NFC' in window) {
+        document.getElementById('scanButton').addEventListener('click', async () => {
+          try {
+            const nfc = new NFC();
+            const tag = await nfc.scan();
+            const uid = tag.id;  // De UID van de NFC-tag
+            document.getElementById('result').innerHTML = "NFC Tag Gevonden: " + uid;
+
+            // Stuur de UID naar de M5Stamp webserver
+            fetch('http://192.168.4.1/updateNFC?uid=' + uid)
+              .then(response => response.text())
+              .then(data => {
+                console.log(data);
+              });
+          } catch (error) {
+            document.getElementById('result').innerHTML = "Fout bij scannen.";
+          }
+        });
+      }
+    </script>
+  </body>
+</html>
